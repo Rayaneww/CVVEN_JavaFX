@@ -1,0 +1,211 @@
+/* ================================================================== */
+/* 1. CONFIGURATION GÉNÉRALE & LOGIN (VOTRE CODE EXISTANT)            */
+/* ================================================================== */
+
+.root {
+    /* Dégradé linéaire : direction diagonale, couleur de départ, couleur d'arrivée */
+    -fx-background-color: linear-gradient(to right bottom, #D4F1F4, #E7F0D5);
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* Champs de texte (Login & Password) */
+.text-field, .password-field {
+    -fx-background-color: #F0F2F5;
+    -fx-border-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #4A90E2;
+    -fx-border-width: 1px;
+}
+
+#lblwelcome {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+    -fx-alignment: CENTER;
+}
+
+/* Bouton standard (Login) */
+.button {
+    -fx-background-color: #4A90E2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 20px;
+    -fx-cursor: hand;
+    -fx-padding: 8px 20px;
+}
+
+.button:hover {
+    -fx-background-color: #357ABD;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
+.button:pressed {
+    -fx-background-color: #2A5D8F;
+}
+
+/* ================================================================== */
+/* 2. STYLES SPÉCIFIQUES AU DASHBOARD (PAGE D'ACCUEIL)                */
+/* ================================================================== */
+
+/* Le bandeau du haut (Header) */
+.header-panel {
+    -fx-background-color: #2C3E50;
+    -fx-padding: 0 20 0 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 10, 0, 0, 0);
+}
+
+/* La barre latérale (Menu) */
+.sidebar {
+    -fx-background-color: #34495E;
+    -fx-padding: 20 10 20 10;
+}
+
+/* Les boutons du menu de gauche */
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-alignment: BASELINE_LEFT;
+    -fx-cursor: hand;
+    -fx-background-radius: 5px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 3; /* Petite barre à gauche */
+}
+
+.menu-button:hover {
+    -fx-background-color: #2C3E50; /* Un peu plus foncé au survol */
+    -fx-border-color: #4A90E2;     /* Barre bleue apparaît à gauche */
+    -fx-effect: none;              /* On enlève l'ombre du bouton standard */
+}
+
+/* Le bouton déconnexion spécifique (rouge) */
+.logout-button {
+    -fx-background-color: #E74C3C;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-background-radius: 5px;
+}
+
+.logout-button:hover {
+    -fx-background-color: #C0392B;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
+/* Cartes de statistiques (Zone centrale) */
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-padding: 10px;
+}
+
+/* Titres spécifiques */
+.title-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.subtitle-label {
+    -fx-font-size: 16px;
+    -fx-font-style: italic;
+}
+/* ================================================================== */
+/* 3. STYLES SPÉCIFIQUES À LA GESTION (TABLEAUX & OUTILS)             */
+/* ================================================================== */
+
+/* Barre d'outils (Recherche, Filtres) */
+.toolbar-panel {
+    -fx-background-color: white;
+    -fx-padding: 15px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
+}
+
+/* Le Tableau de données */
+.table-view {
+    -fx-background-color: white;
+    -fx-table-cell-border-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #ECF0F1; /* Gris très clair pour l'entête */
+    -fx-background-radius: 5px 5px 0 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #2C3E50;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #ECF0F1 transparent; /* Ligne de séparation */
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #FAFAFA; /* Zébrure légère */
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #E8F6F3; /* Vert très pâle à la sélection */
+    -fx-text-fill: #2C3E50;
+}
+
+/* Boutons d'actions (Ajouter, Modifier, Supprimer) */
+.action-btn-success {
+    -fx-background-color: #27AE60;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.action-btn-warning {
+    -fx-background-color: #F39C12;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.action-btn-danger {
+    -fx-background-color: #E74C3C;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+/* Champs de texte spécifiques au Login */
+.text-field-login {
+    -fx-background-color: #F0F2F5;
+    -fx-border-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+}
+
+.text-field-login:focused {
+    -fx-background-color: white;
+    -fx-border-color: #2C3E50;
+    -fx-border-width: 1px;
+}
+
+/* Bouton Connexion */
+.button-login {
+    -fx-background-color: #2C3E50; /* Bleu Nuit */
+    -fx-text-fill: white;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.button-login:hover {
+    -fx-background-color: #34495E;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
