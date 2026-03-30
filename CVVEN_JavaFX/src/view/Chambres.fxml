@@ -33,7 +33,7 @@
 				<Label styleClass="subtitle-label"
 					text="Système de Gestion Hôtelière" textFill="#bdc3c7" />
 				<Region HBox.hgrow="ALWAYS" />
-				<Label style="-fx-font-size: 14px;" text="Administrateur"
+				<Label fx:id="lblUtilisateur" style="-fx-font-size: 14px;" text="Utilisateur"
 					textFill="WHITE" />
 			</children>
 		</HBox>
@@ -62,7 +62,7 @@
 				</Button>
 
 				<Button fx:id="btnReservations"
-					maxWidth="1.7976931348623157E308" prefHeight="50.0"
+					maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goReservations" prefHeight="50.0"
 					styleClass="menu-button" text="Gestion des réservations">
 					<padding>
 						<Insets left="20.0" />
@@ -70,7 +70,7 @@
 				</Button>
 
 				<Button fx:id="btnClients" maxWidth="1.7976931348623157E308"
-					prefHeight="50.0" styleClass="menu-button"
+					mnemonicParsing="false" onAction="#goClients" prefHeight="50.0" styleClass="menu-button"
 					text="Gestion des clients">
 					<padding>
 						<Insets left="20.0" />
@@ -78,7 +78,7 @@
 				</Button>
 
 				<Button fx:id="btnPersonnel"
-					maxWidth="1.7976931348623157E308" prefHeight="50.0"
+					maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goPersonnel" prefHeight="50.0"
 					styleClass="menu-button" text="Gestion du personnel">
 					<padding>
 						<Insets left="20.0" />
@@ -86,7 +86,7 @@
 				</Button>
 
 				<Button fx:id="btnFacturation"
-					maxWidth="1.7976931348623157E308" prefHeight="50.0"
+					maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goFacturation" prefHeight="50.0"
 					styleClass="menu-button" text="Facturation">
 					<padding>
 						<Insets left="20.0" />

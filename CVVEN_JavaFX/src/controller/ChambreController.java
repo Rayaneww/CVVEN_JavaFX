@@ -1,88 +1,68 @@
 package controller;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import model.listeChambres;
 import Metier.Chambre;
-import dbConnection.SingletonConnection;
+import Metier.type_Chambre;
+import Metier.UserSession;
+import util.NavigationUtils;
 
-import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ChambreController implements Initializable {
 
-	// --- FXML IDs ---
-	@FXML
-	private TableView<Chambre> tableChambres;
+	@FXML private BorderPane mainContainer;
+	@FXML private TableView<Chambre> tableChambres;
+	@FXML private TableColumn<Chambre, String> colId;
+	@FXML private TableColumn<Chambre, Integer> colNumero;
+	@FXML private TableColumn<Chambre, String> colEmplacement;
+	@FXML private TableColumn<Chambre, String> colRemarque;
+	@FXML private TableColumn<Chambre, String> colType;
 
-	// CORRECTION 1 : Types des colonnes (Integer pour les nombres)
-	@FXML
-	private TableColumn<Chambre, String> colId; // Ajout de l'ID (utile même si caché)
-	@FXML
-	private TableColumn<Chambre, Integer> colNumero;
-	@FXML
-	private TableColumn<Chambre, String> colEmplacement; // Remplace "Etage"
-	@FXML
-	private TableColumn<Chambre, String> colRemarque; // Remplace "Description"
-	@FXML
-	private TableColumn<Chambre, Integer> colType; // Affiche l'ID du type pour l'instant
+	@FXML private TextField txtRecherche;
+	@FXML private ComboBox<String> comboType;
+	@FXML private ComboBox<String> comboStatut;
+	@FXML private Button btnAjouter, btnModifier, btnSupprimer, btnDeconnexion, btnAcceuil;
+	@FXML private Label lblUtilisateur;
 
-	// Note : colPrix et colStatut ont été retirés car absents de ta classe Chambre
-	// actuelle
-
-	@FXML
-	private TextField txtRecherche;
-	@FXML
-	private ComboBox<String> comboType;
-	@FXML
-	private ComboBox<String> comboStatut; // A garder seulement si tu ajoutes le champ statut en BDD plus tard
-	@FXML
-	private Button btnAjouter, btnModifier, btnSupprimer, btnDeconnexion, btnAcceuil;
-
-	// --- Données ---
 	private listeChambres gestionnaireChambres;
 	private FilteredList<Chambre> listeFiltree;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
-		// 1. Initialiser le lien avec la BDD
 		gestionnaireChambres = new listeChambres();
 
-		// 2. Configurer les colonnes
-		// CORRECTION 2 : Les noms doivent correspondre aux "Property" de la classe
-		// Chambre
-		// Exemple : chambNumeroProperty() -> on met "chambNumero"
 		colId.setCellValueFactory(new PropertyValueFactory<>("chambId"));
 		colNumero.setCellValueFactory(new PropertyValueFactory<>("chambNumero"));
 		colEmplacement.setCellValueFactory(new PropertyValueFactory<>("chambEmplacement"));
 		colRemarque.setCellValueFactory(new PropertyValueFactory<>("chambRemarque"));
-		// Dans ta classe Chambre, la méthode s'appelle typeLibelleProperty(), donc on
-		// met "typeLibelle"
-		colType.setCellValueFactory(new PropertyValueFactory<>("typeLibelle"));
+		colType.setCellValueFactory(cellData -> {
+			type_Chambre type = cellData.getValue().getType_chambre();
+			return new javafx.beans.property.SimpleStringProperty(type != null ? type.getType_libelle() : "N/A");
+		});
 
-		// 3. Filtres
+		UserSession session = UserSession.getInstance();
+		if (session != null && lblUtilisateur != null) {
+			lblUtilisateur.setText(session.toString());
+		}
+
 		setupFilters();
 
-		// 4. Gestion Sélection
 		tableChambres.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
 			boolean selected = (newV != null);
 			btnModifier.setDisable(!selected);
@@ -90,39 +70,13 @@ public class ChambreController implements Initializable {
 		});
 	}
 
-	public void goAcceuil() {
-		System.out.println("Clic sur accueil");
-		// --- SUCCÈS ---
-		try {
-			// Fermer la fenêtre de login actuelle
-			Stage currentStage = (Stage) btnAcceuil.getScene().getWindow();
-			currentStage.close();
-
-			// Ouvrir la nouvelle fenêtre (Page d'accueil)
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/FXMLAcceuil.fxml"));
-			Parent root = loader.load();
-
-			Stage newStage = new Stage();
-			newStage.setTitle("Page d'Acceuil");
-			newStage.setScene(new Scene(root));
-			newStage.show();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			showAlert("Erreur Critique", "Impossible de charger la page d'accueil.", Alert.AlertType.ERROR);
-		}
-		;
-	}
-
 	private void setupFilters() {
-		// Remplissage des combos (A adapter selon tes vrais types en BDD)
-		comboType.getItems().addAll("Tous", "Simple", "Double", "Suite");
+		comboType.getItems().add("Tous");
+		gestionnaireChambres.getTypes().forEach(t -> comboType.getItems().add(t.getType_libelle()));
 		comboType.getSelectionModel().selectFirst();
 
-		// On initialise la liste filtrée
 		listeFiltree = new FilteredList<>(gestionnaireChambres.getChambres(), p -> true);
 
-		// Listeners
 		txtRecherche.textProperty().addListener((obs, o, n) -> filtrer());
 		comboType.valueProperty().addListener((obs, o, n) -> filtrer());
 
@@ -133,74 +87,181 @@ public class ChambreController implements Initializable {
 
 	private void filtrer() {
 		String search = txtRecherche.getText().toLowerCase();
+		String typeFilter = comboType.getValue();
 
-		// CORRECTION 3 : Adaptation du filtre aux types de données (int vs String)
 		listeFiltree.setPredicate(c -> {
-			// Filtre Recherche Texte
-			// On convertit le numéro (int) en String pour utiliser .contains
-			boolean matchText = search.isEmpty() || String.valueOf(c.getChambNumero()).contains(search)
+			boolean matchText = search.isEmpty()
+					|| String.valueOf(c.getChambNumero()).contains(search)
 					|| (c.getChambRemarque() != null && c.getChambRemarque().toLowerCase().contains(search))
 					|| (c.getChambEmplacement() != null && c.getChambEmplacement().toLowerCase().contains(search));
 
-			// Note : Le filtre par Type via ComboBox est complexe ici car ta BDD stocke un
-			// ID (int)
-			// et ta ComboBox affiche du texte ("Simple"). Il faudrait une map de
-			// correspondance.
-			// Pour l'instant, on laisse passer tout le monde sur le type.
-			return matchText;
+			boolean matchType = "Tous".equals(typeFilter)
+					|| (c.getType_chambre() != null && typeFilter.equals(c.getType_chambre().getType_libelle()));
+
+			return matchText && matchType;
 		});
 	}
 
-	// --- ACTIONS ---
+	private void nav(String fxml, String title) {
+		NavigationUtils.goTo(fxml, title, true, (Stage) mainContainer.getScene().getWindow());
+	}
+
+	@FXML public void goAcceuil()      { nav("/view/FXMLAcceuil.fxml",  "CVVEN - Accueil"); }
+	@FXML public void goChambres()     { nav("/view/Chambres.fxml",      "Gestion des Chambres"); }
+	@FXML public void goClients()      { nav("/view/Clients.fxml",       "Gestion des Clients"); }
+	@FXML public void goReservations() { nav("/view/Reservations.fxml",  "Gestion des Réservations"); }
+	@FXML public void goPersonnel()    { nav("/view/Personnel.fxml",     "Gestion du Personnel"); }
+	@FXML public void goFacturation()  { nav("/view/Facturation.fxml",   "Facturation"); }
+
+	@FXML
+	public void deconnexion(ActionEvent event) {
+		UserSession.cleanSession();
+		NavigationUtils.goTo("/view/FXMLLogin.fxml", "CVVEN - Authentification", false,
+				(Stage) mainContainer.getScene().getWindow());
+	}
 
 	@FXML
 	public void ajtChambre(ActionEvent event) {
-		// CORRECTION 4 : Le constructeur doit correspondre : (String id, String
-		// emplacement, int numero, String remarque, int type)
-		// Génération d'un ID unique fictif pour le test
-		String newId = "CH-" + System.currentTimeMillis();
-		int newNum = (int) (Math.random() * 1000);
+		showChambreDialog(null).ifPresent(c -> {
+			if (gestionnaireChambres.ajouterChambre(c)) {
+				showAlert("Succès", "Chambre ajoutée avec succès.", Alert.AlertType.INFORMATION);
+			} else {
+				showAlert("Erreur", "Impossible d'ajouter la chambre. Vérifiez les données.", Alert.AlertType.ERROR);
+			}
+		});
+	}
 
-		Chambre nouvelle = new Chambre(newId, "Etage 1", // Emplacement
-				newNum, // Numéro
-				"Nouvelle chambre test" // Remarque
-		// Type ID (1 par défaut)
-		);
+	@FXML
+	public void modifChambre(ActionEvent event) {
+		Chambre selected = tableChambres.getSelectionModel().getSelectedItem();
+		if (selected == null) return;
 
-		if (gestionnaireChambres.ajouterChambre(nouvelle)) {
-			System.out.println("Chambre ajoutée !");
-		} else {
-			System.err.println("Erreur d'ajout");
-		}
+		showChambreDialog(selected).ifPresent(c -> {
+			if (gestionnaireChambres.modifierChambre(c)) {
+				tableChambres.refresh();
+				showAlert("Succès", "Chambre modifiée avec succès.", Alert.AlertType.INFORMATION);
+			} else {
+				showAlert("Erreur", "Impossible de modifier la chambre.", Alert.AlertType.ERROR);
+			}
+		});
 	}
 
 	@FXML
 	public void suppChambre(ActionEvent event) {
 		Chambre selected = tableChambres.getSelectionModel().getSelectedItem();
-		if (selected != null) {
-			Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-					"Supprimer la chambre n°" + selected.getChambNumero() + " ?", ButtonType.YES, ButtonType.NO);
-			alert.showAndWait().ifPresent(response -> {
-				if (response == ButtonType.YES) {
-					if (gestionnaireChambres.supprimerChambre(selected)) {
-						System.out.println("Suppression réussie !");
-					}
+		if (selected == null) return;
+
+		Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+				"Supprimer la chambre n°" + selected.getChambNumero() + " ?",
+				ButtonType.YES, ButtonType.NO);
+		confirm.setTitle("Confirmation");
+		confirm.setHeaderText(null);
+		confirm.showAndWait().ifPresent(response -> {
+			if (response == ButtonType.YES) {
+				if (!gestionnaireChambres.supprimerChambre(selected)) {
+					showAlert("Erreur", "Impossible de supprimer la chambre.", Alert.AlertType.ERROR);
 				}
-			});
+			}
+		});
+	}
+
+	private Optional<Chambre> showChambreDialog(Chambre existing) {
+		Dialog<Chambre> dialog = new Dialog<>();
+		dialog.setTitle(existing == null ? "Nouvelle Chambre" : "Modifier la Chambre");
+		dialog.setHeaderText(null);
+
+		ButtonType saveBtn = new ButtonType("Enregistrer", ButtonBar.ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(saveBtn, ButtonType.CANCEL);
+
+		TextField fieldNumero = new TextField();
+		fieldNumero.setPromptText("Ex: 101");
+		TextField fieldEmplacement = new TextField();
+		fieldEmplacement.setPromptText("Ex: Bâtiment A - Étage 1");
+		TextField fieldRemarque = new TextField();
+		fieldRemarque.setPromptText("Facultatif");
+
+		ComboBox<type_Chambre> comboTypeDialog = new ComboBox<>();
+		comboTypeDialog.setItems(gestionnaireChambres.getTypes());
+		comboTypeDialog.setConverter(new StringConverter<type_Chambre>() {
+			@Override
+			public String toString(type_Chambre t) {
+				return t == null ? "" : t.getType_libelle();
+			}
+			@Override
+			public type_Chambre fromString(String s) {
+				return null;
+			}
+		});
+		comboTypeDialog.setMaxWidth(Double.MAX_VALUE);
+
+		if (existing != null) {
+			fieldNumero.setText(String.valueOf(existing.getChambNumero()));
+			fieldEmplacement.setText(existing.getChambEmplacement());
+			fieldRemarque.setText(existing.getChambRemarque());
+			if (existing.getType_chambre() != null) {
+				int currentTypeId = existing.getType_chambre().getType_id();
+				comboTypeDialog.getItems().stream()
+						.filter(t -> t.getType_id() == currentTypeId)
+						.findFirst()
+						.ifPresent(comboTypeDialog::setValue);
+			}
 		}
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(12);
+		grid.setPadding(new Insets(20, 30, 10, 10));
+		grid.add(new Label("Numéro :"), 0, 0);
+		grid.add(fieldNumero, 1, 0);
+		grid.add(new Label("Emplacement :"), 0, 1);
+		grid.add(fieldEmplacement, 1, 1);
+		grid.add(new Label("Remarque :"), 0, 2);
+		grid.add(fieldRemarque, 1, 2);
+		grid.add(new Label("Type :"), 0, 3);
+		grid.add(comboTypeDialog, 1, 3);
+		dialog.getDialogPane().setContent(grid);
+
+		Node saveButton = dialog.getDialogPane().lookupButton(saveBtn);
+		saveButton.setDisable(true);
+
+		Runnable validate = () -> {
+			boolean invalid = fieldNumero.getText().trim().isEmpty()
+					|| fieldEmplacement.getText().trim().isEmpty()
+					|| comboTypeDialog.getValue() == null;
+			saveButton.setDisable(invalid);
+		};
+		fieldNumero.textProperty().addListener((o, ov, nv) -> validate.run());
+		fieldEmplacement.textProperty().addListener((o, ov, nv) -> validate.run());
+		comboTypeDialog.valueProperty().addListener((o, ov, nv) -> validate.run());
+
+		dialog.setResultConverter(btn -> {
+			if (btn != saveBtn) return null;
+			try {
+				int numero = Integer.parseInt(fieldNumero.getText().trim());
+				String emplacement = fieldEmplacement.getText().trim();
+				String remarque = fieldRemarque.getText().trim().isEmpty()
+						? "Pas de remarque" : fieldRemarque.getText().trim();
+				type_Chambre type = comboTypeDialog.getValue();
+
+				if (existing != null) {
+					existing.setChambNumero(numero);
+					existing.setChambEmplacement(emplacement);
+					existing.setChambRemarque(remarque);
+					existing.setType_chambre(type);
+					return existing;
+				} else {
+					String id = "CH-" + System.currentTimeMillis();
+					return new Chambre(id, emplacement, numero, remarque, type);
+				}
+			} catch (NumberFormatException e) {
+				showAlert("Erreur de saisie", "Le numéro doit être un entier valide.", Alert.AlertType.WARNING);
+				return null;
+			}
+		});
+
+		return dialog.showAndWait();
 	}
 
-	@FXML
-	public void modifChambre(ActionEvent event) {
-		System.out.println("Fonctionnalité à implémenter : Ouvrir fenêtre de modif");
-	}
-
-	@FXML
-	public void deconnexion(ActionEvent event) {
-		// Code pour revenir au login
-	}
-
-	// Méthode utilitaire pour afficher les alertes proprement
 	private void showAlert(String titre, String message, Alert.AlertType type) {
 		Alert alert = new Alert(type);
 		alert.setTitle(titre);

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="mainContainer" prefHeight="720.0" prefWidth="1280.0"
+    xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="controller.ReservationController">
+    <stylesheets>
+        <URL value="@style.css"/>
+        <URL value="@../application/application.css"/>
+    </stylesheets>
+
+    <top>
+        <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="20.0" styleClass="header-panel" BorderPane.alignment="CENTER">
+            <children>
+                <Label styleClass="title-label" text="CVVEN" textFill="WHITE"/>
+                <Separator orientation="VERTICAL" prefHeight="40.0"/>
+                <Label styleClass="subtitle-label" text="Système de Gestion Hôtelière" textFill="#bdc3c7"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblUtilisateur" style="-fx-font-size:14px;" text="Utilisateur" textFill="WHITE"/>
+            </children>
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefHeight="640.0" prefWidth="300.0" spacing="10.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+            <children>
+                <Label style="-fx-font-weight:bold;-fx-padding:0 0 10 10;" text="MENU GÉNÉRAL" textFill="#95a5a6"/>
+                <Button fx:id="btnAcceuil"       maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goAcceuil"       prefHeight="50.0" styleClass="menu-button" text="Accueil"><padding><Insets left="20.0"/></padding></Button>
+                <Button fx:id="btnChambres"      maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goChambres"      prefHeight="50.0" styleClass="menu-button" text="Gestion des chambres"><padding><Insets left="20.0"/></padding></Button>
+                <Button fx:id="btnReservations"  maxWidth="1.7976931348623157E308" prefHeight="50.0" style="-fx-background-color:#2C3E50;-fx-border-color:#4A90E2;-fx-border-width:0 0 0 3;" styleClass="menu-button" text="Gestion des réservations"><padding><Insets left="20.0"/></padding></Button>
+                <Button fx:id="btnClients"       maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goClients"       prefHeight="50.0" styleClass="menu-button" text="Gestion des clients"><padding><Insets left="20.0"/></padding></Button>
+                <Button fx:id="btnPersonnel"     maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goPersonnel"     prefHeight="50.0" styleClass="menu-button" text="Gestion du personnel"><padding><Insets left="20.0"/></padding></Button>
+                <Button fx:id="btnFacturation"   maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goFacturation"   prefHeight="50.0" styleClass="menu-button" text="Facturation"><padding><Insets left="20.0"/></padding></Button>
+                <Region VBox.vgrow="ALWAYS"/>
+                <Button fx:id="btnDeconnexion"   maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#deconnexion"     prefHeight="45.0" styleClass="logout-button" text="Déconnexion"/>
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="20.0" style="-fx-padding:30;" BorderPane.alignment="CENTER">
+            <children>
+                <Label style="-fx-font-size:26px;-fx-font-weight:bold;" text="Gestion des Réservations" textFill="#2c3e50"/>
+                <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="toolbar-panel">
+                    <children>
+                        <TextField fx:id="txtRecherche" prefWidth="250.0" promptText="Rechercher (Client, ID...)"/>
+                        <ComboBox fx:id="comboStatut" prefWidth="160.0" promptText="Statut" style="-fx-background-color:#F0F2F5;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="btnAjouter" mnemonicParsing="false" onAction="#ajtReservation" prefHeight="35.0" styleClass="action-btn-success" text="+ Nouvelle Réservation"/>
+                    </children>
+                </HBox>
+                <TableView fx:id="tableReservations" VBox.vgrow="ALWAYS">
+                    <columns>
+                        
+                        <TableColumn fx:id="colClient"    prefWidth="180.0" text="Client"/>
+                        <TableColumn fx:id="colChambre"   prefWidth="180.0" text="Chambre"/>
+                        <TableColumn fx:id="colDateDebut" prefWidth="110.0" text="Arrivée"/>
+                        <TableColumn fx:id="colDateFin"   prefWidth="110.0" text="Départ"/>
+                        <TableColumn fx:id="colNuits"     prefWidth="60.0"  text="Nuits"/>
+                        
+                    </columns>
+                    <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+                </TableView>
+                <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                    <children>
+                        <Button fx:id="btnModifier"  disable="true" mnemonicParsing="false" onAction="#modifReservation"  prefHeight="34.0" prefWidth="130.0" styleClass="action-btn-warning" text="Modifier"/>
+                        <Button fx:id="btnSupprimer" disable="true" mnemonicParsing="false" onAction="#suppReservation"   prefHeight="34.0" prefWidth="130.0" styleClass="action-btn-danger"  text="Supprimer"/>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

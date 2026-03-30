@@ -12,6 +12,7 @@
 
 <BorderPane fx:id="mainContainer" prefHeight="720.0" prefWidth="1180.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomeController">
 
+
     <stylesheets>
         <URL value="@style.css" />
       <URL value="@../application/application.css" />
@@ -50,25 +51,25 @@
                     </padding>
                 </Button>
 
-                <Button fx:id="btnReservations" layoutX="20.0" layoutY="57.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" styleClass="menu-button" text="Gestion des réservations">
+                <Button fx:id="btnReservations" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goReservations" prefHeight="50.0" styleClass="menu-button" text="Gestion des réservations">
                     <padding>
                         <Insets left="20.0" />
                     </padding>
                 </Button>
 
-                <Button fx:id="btnClients" layoutX="20.0" layoutY="117.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" styleClass="menu-button" text="Gestion des clients">
+                <Button fx:id="btnClients" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goClients" prefHeight="50.0" styleClass="menu-button" text="Gestion des clients">
                     <padding>
                         <Insets left="20.0" />
                     </padding>
                 </Button>
 
-                <Button fx:id="btnPersonnel" layoutX="20.0" layoutY="177.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" styleClass="menu-button" text="Gestion du personnel">
+                <Button fx:id="btnPersonnel" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goPersonnel" prefHeight="50.0" styleClass="menu-button" text="Gestion du personnel">
                     <padding>
                         <Insets left="20.0" />
                     </padding>
                 </Button>
-                
-                <Button fx:id="btnFacturation" layoutX="20.0" layoutY="237.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" styleClass="menu-button" text="Facturation">
+
+                <Button fx:id="btnFacturation" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#goFacturation" prefHeight="50.0" styleClass="menu-button" text="Facturation">
                     <padding>
                         <Insets left="20.0" />
                     </padding>
@@ -76,7 +77,7 @@
 
                 <Region VBox.vgrow="ALWAYS" />
 
-                <Button fx:id="btnDeconnexion" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="45.0" styleClass="logout-button" text="Déconnexion" />
+                <Button fx:id="btnDeconnexion" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleDeconnexion" prefHeight="45.0" styleClass="logout-button" text="Déconnexion" />
             </children>
         </VBox>
     </left>
